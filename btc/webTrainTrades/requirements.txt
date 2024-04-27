@@ -1,0 +1,8 @@
+binance-history
+plotly
+
+
+
+orjson
+mplfinance
+matplotlib
