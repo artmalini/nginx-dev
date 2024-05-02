@@ -1,0 +1,62 @@
+2024-04-29 22:02:16,409 [INFO ] Long entry 64025.77
+2024-04-29 22:02:52,712 [INFO ] Long entry 63966.4
+2024-04-29 22:03:19,709 [WARNI] hloot ISSUE object of type 'numpy.float64' has no len()
+2024-04-29 22:10:13,176 [INFO ] hlootSrc  {'index': 12651, 'value': 64107.32}
+2024-04-29 22:11:21,454 [INFO ] hlootSrc  {'index': 12651, 'value': 64107.32}
+2024-04-29 22:13:04,967 [INFO ] hlootSrc  {'index': 12651, 'value': 64107.32}
+2024-04-29 22:19:09,184 [INFO ] hlootSrc  {'index': 12651, 'value': 64107.32}
+2024-04-29 22:19:25,345 [INFO ] hlootSrc  {'index': 12651, 'value': 64107.32}
+2024-04-29 22:19:53,039 [INFO ] hlootSrc  {'index': 12651, 'value': 64107.32}
+2024-04-29 22:20:50,645 [INFO ] hlootSrc  {'index': 12651, 'value': 64107.32}
+2024-04-29 22:31:24,541 [WARNI] libmath l_high The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-04-29 22:31:24,542 [INFO ] hlootSrc  0
+2024-04-29 22:33:07,764 [WARNI] libmath l_high The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-04-29 22:33:07,764 [INFO ] hlootSrc  0
+2024-04-29 22:36:43,559 [WARNI] libmath l_high The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-04-29 22:36:43,559 [INFO ] hlootSrc  0
+2024-04-29 22:37:13,767 [WARNI] libmath l_high The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all(). 72976.44
+2024-04-29 22:37:13,767 [INFO ] hlootSrc  0
+2024-04-29 22:38:35,751 [WARNI] libmath l_high The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all(). 64062.31
+2024-04-29 22:38:35,752 [INFO ] hlootSrc  0
+2024-04-29 22:39:37,345 [WARNI] libmath l_high The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-04-29 22:39:37,346 [INFO ] hlootSrc  0
+2024-04-29 22:40:15,578 [WARNI] libmath l_high The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-04-29 22:40:15,579 [INFO ] hlootSrc  0
+2024-04-29 22:42:21,991 [WARNI] libmath l_high The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+2024-04-29 22:42:21,992 [INFO ] hlootSrc  0
+2024-04-29 22:42:53,309 [WARNI] libmath l_high 'numpy.float64' object has no attribute 'empty'
+2024-04-29 22:42:53,309 [INFO ] hlootSrc  0
+2024-04-29 22:44:44,503 [INFO ] hlootSrc  64107.32
+2024-04-29 22:46:46,092 [INFO ] hlootSrc  64107.32
+2024-04-29 22:46:46,093 [INFO ] hlootSrc1 64107.32
+2024-04-29 22:47:04,783 [INFO ] hlootSrc  64107.32
+2024-04-29 22:47:04,784 [INFO ] hlootSrc1 64107.32
+2024-04-29 22:47:15,121 [INFO ] hlootSrc  64107.32
+2024-04-29 22:47:15,122 [INFO ] hlootSrc1 64107.32
+2024-04-29 22:50:06,175 [INFO ] hlootSrc  64107.32
+2024-04-29 22:50:06,176 [INFO ] hlootSrc1 64107.32
+2024-04-29 22:51:13,287 [INFO ] hlootSrc  64107.32
+2024-04-29 22:51:13,288 [INFO ] hlootSrc1 64107.32
+2024-04-29 22:53:30,392 [INFO ] hlootSrc  64107.32
+2024-04-29 22:53:30,393 [INFO ] hlootSrc1 64107.32
+2024-04-29 22:57:28,803 [INFO ] hlootSrc  64107.32
+2024-04-29 22:57:28,804 [INFO ] hlootSrc1 64107.32
+2024-04-29 22:59:44,131 [INFO ] hlootSrc  64107.32
+2024-04-29 22:59:44,132 [INFO ] hlootSrc1 64107.32
+2024-04-29 22:59:44,134 [INFO ] hlootSrc1 64107.32
+2024-04-29 23:05:02,563 [INFO ] hlootSrc  64107.32
+2024-04-29 23:05:02,564 [INFO ] hlootSrcPrevious 64107.32
+2024-04-29 23:05:02,565 [INFO ] hlootSrclowest 63891.72
+2024-04-29 23:10:20,343 [INFO ] hlootSrc  64107.32
+2024-04-29 23:10:20,343 [INFO ] hlootSrcPrevious 64107.32
+2024-04-29 23:10:20,344 [INFO ] hlootSrclowest 63891.72
+2024-04-29 23:10:20,345 [INFO ] vud1 0.0
+2024-04-29 23:10:44,258 [INFO ] hlootSrc  64107.32
+2024-04-29 23:10:44,259 [INFO ] hlootSrcPrevious 64107.32
+2024-04-29 23:10:44,260 [INFO ] hlootSrclowest 63891.72
+2024-04-29 23:10:44,261 [INFO ] vud1 0.0
+2024-04-29 23:17:50,796 [INFO ] hlootSrc  64107.32
+2024-04-29 23:17:50,797 [INFO ] hlootSrcPrevious 64107.32
+2024-04-29 23:17:50,798 [INFO ] hlootSrclowest 63891.72
+2024-04-29 23:17:50,798 [INFO ] vud1 0.0
+2024-04-29 23:17:50,799 [INFO ] vUD 512362.56

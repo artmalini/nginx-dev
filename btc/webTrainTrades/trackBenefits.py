@@ -1,4 +1,5 @@
 import pandas as pd
+import helpers as h
 
 def trackBenefits(long_entry, short_entry, df, money):
     # Track current position and starting capital
@@ -17,7 +18,6 @@ def trackBenefits(long_entry, short_entry, df, money):
             if current_position != 'long':  # If not already in a long position
                 # long_entry_point = df.index[i]
                 if current_position == 'short':  # If in a short position, close it
-                    print(df.loc)
                     exit_time = df.index[i]
                     exit_price = df.loc[exit_time, 'open']
                     percent_change = ((entry_price - exit_price) / entry_price) * 100
@@ -68,17 +68,17 @@ def trackBenefits(long_entry, short_entry, df, money):
         # Calculate max volatility as percentage
         entry_price = df.loc[trade['Entry Time'], 'close']
         max_volatility_percent = (max_volatility / entry_price) * 100
-        print(f"{count} | Entry Type: {trade['Entry Type']} | Entry Price: {entry_price} | Exit Price: {exit_price} | Entry Time: {trade['Entry Time']} | Exit Time: {trade['Exit Time']} | Profit/Loss (%): {round(trade['Profit/Loss (%)'], 2)} | Volatility: {round(max_volatility_percent, 2)}")
+        h.logger.info(f"{count} | Entry Type: {trade['Entry Type']} | Entry Price: {entry_price} | Exit Price: {exit_price} | Entry Time: {trade['Entry Time']} | Exit Time: {trade['Exit Time']} | Profit/Loss (%): {round(trade['Profit/Loss (%)'], 2)} | Volatility: {round(max_volatility_percent, 2)}")
         count += 1
 
     # Overall profit/loss since strategy started
     overall_change = ((current_capital - starting_capital) / starting_capital) * 100
     # return trades, overall_change
-    print("Overall Profit/Loss (%):", round(overall_change, 2))
+    h.logger.info(f"Overall Profit/Loss ($): {round(overall_change, 2)}")
 
     # Calculate win rate
     winning_trades = [trade for trade in trades if trade['Profit/Loss (%)'] > 0]
     win_rate = (len(winning_trades) / len(trades)) * 100
 
     # Print win rate
-    print("Win Rate (%):", round(win_rate, 2))
+    h.logger.info(f"Win Rate (%): {round(win_rate, 2)}")

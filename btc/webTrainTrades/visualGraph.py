@@ -4,8 +4,10 @@ import plotly.graph_objects as go
 import plotly.io as pio
 pio.renderers.default = "browser"
 import pandas as pd
+from strategies.lorenzianClassification.lorenzianClassification import lC
 from strategies.dms.directionalMovementIndexStrategy import directionalMovement
 from trackBenefits import trackBenefits
+import helpers as h
 
 class visualGraph :
     def __init__(self, source):
@@ -38,8 +40,15 @@ class visualGraph :
                     df['close_datetime'] = pd.to_datetime(df['close_datetime'])
                     df.set_index('close_datetime', inplace=True)
                     # Calculate long and short entry points
-                    long_entry, short_entry = directionalMovement(df)
-
+                    long_entry, short_entry = lC(df)
+                    # h.logger.info(f"Long entry {long_entry}")
+                    # return
+                    # h.logger.info(f"DF {df}")
+                    
+                    # long_entry, short_entry = directionalMovement(df)
+                    # h.logger.info(f"{long_entry}")
+                    #  return
+                
                     # Track current position
                     current_position = None
 
@@ -105,7 +114,7 @@ class visualGraph :
                     # fig.show()
 
 
-                    trackBenefits(long_entry, short_entry, df, 1000)
+                    # trackBenefits(long_entry, short_entry, df, 1000)
 
             else:
                 print("Column 'close_datetime' not found in DataFrame.")

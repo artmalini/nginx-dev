@@ -1,6 +1,6 @@
 binance-history
 plotly
-
+ta
 
 
 orjson

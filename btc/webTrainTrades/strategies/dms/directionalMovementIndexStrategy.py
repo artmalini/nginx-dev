@@ -1,4 +1,5 @@
 import numpy as np
+import helpers as h
 
 def dmi(data, adxlen_adi, dilen_adi, keyLevel_adi):
     up = data['high'].diff()
@@ -9,6 +10,7 @@ def dmi(data, adxlen_adi, dilen_adi, keyLevel_adi):
     sum_dm = plus + minus
     adx = 100 * (np.abs(plus - minus) / np.where(sum_dm == 0, 1, sum_dm)).rolling(adxlen_adi).mean()
     
+    #  h.logger.info(f"ADX {adx}")
     # Determine long and short signals
     long_signal = ((adx.shift(1) < keyLevel_adi) & (adx > keyLevel_adi) & (plus > minus))
     short_signal = ((adx.shift(1) < keyLevel_adi) & (adx > keyLevel_adi) & (plus < minus))
@@ -16,7 +18,7 @@ def dmi(data, adxlen_adi, dilen_adi, keyLevel_adi):
     # Refine signals to avoid consecutive signals in the same direction
     long_entry = (long_signal & ~(long_signal.shift(1).fillna(False)))
     short_entry = (short_signal & ~(short_signal.shift(1).fillna(False)))
-    
+
     return long_entry, short_entry
 
 def directionalMovement(df):    

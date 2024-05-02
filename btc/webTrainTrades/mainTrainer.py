@@ -11,29 +11,6 @@ from visualGraph import visualGraph
 import pickle
 from pathlib import Path
 
-#setup the logger
-try:
-   os.makedirs("{path}/logs/{date}".format(path=os.path.dirname(os.path.abspath(__file__)),date=datetime.today().strftime('%Y-%m-%d')))
-except FileExistsError:
-   # directory already exists
-   pass
-
-try:
-    logging.basicConfig(
-        format="%(asctime)s [%(levelname)-5.5s] %(message)s",
-        level=logging.DEBUG,
-        handlers=[
-            logging.FileHandler("{path}/logs/{date}/{fname}.log".format(path=os.path.dirname(os.path.abspath(__file__)), date=datetime.today().strftime('%Y-%m-%d'), fname="logs")),
-            logging.StreamHandler()
-        ])
-    logger = logging.getLogger()
-    if h.ENABLE_LOGGING == True :
-        logger.setLevel(logging.INFO)  # Set the logger's level to All
-    if h.ENABLE_LOGGING == False :
-        logger.setLevel(logging.WARNING)  # Set the logger's level to WARNING
-except:
-    pass
-
 pd.set_option('display.max_rows', None)  # Show all rows
 # pd.set_option('display.max_columns', None)  # Show all columns
 
@@ -90,6 +67,7 @@ def fetch_and_cache_klines(broker, start, end, symbol, timeframe):
         # print(cached_data.columns)
         # print(cached_data.head())
         visual = visualGraph(cached_data)
+        
         visual.start()
         return cached_data
     else:
@@ -105,7 +83,7 @@ def fetch_and_cache_klines(broker, start, end, symbol, timeframe):
         return klines
     
 klines = fetch_and_cache_klines("Binance", "2024-03-14 00:01", "2024-04-27 00:01", "BTCUSDT", "5m")
-# logger.info(klines)
+# h.logger.info(klines)
 
 
 
