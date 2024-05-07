@@ -40,7 +40,7 @@ def vslrt(df, vslrtSrc, vslrtLen1, vslrtLen2):
         # Get buy/sell volume regression slopes for long term period
         slope_volume_up_lt, slope_volume_down_lt = _get_trend(df, vslrtLen2)
 
-        h.logger.info(f"slope_volume_up_lt {slope_volume_up_lt}")
+        # h.logger.info(f"slope_volume_up_lt {slope_volume_up_lt}")
         long_signal = (slope_price > 0) & (slope_volume_up > 0) & (slope_volume_up > slope_volume_down) & (slope_price_lt > 0) & (slope_volume_up_lt > 0) & (slope_volume_up_lt > slope_volume_down_lt)
         short_signal = (slope_price < 0) & (slope_volume_down > 0) & (slope_volume_up < slope_volume_down) & (slope_price_lt < 0) & (slope_volume_down_lt > 0) & (slope_volume_up_lt < slope_volume_down_lt)
         

@@ -5,86 +5,78 @@ import ta_py as ta
 from indicators.libmath import linreg, l_highest, l_sum, l_lowest, l_nz
 import helpers as h
 
-hlootSrc = [0.0] * 5
-hlootSrclowest = [0.0] * 5
 varFunc = [0.0] * 2
 longStop = [0.0] * 2
 shortStop = [0.0] * 2
-dir = [1] * 2
+dir = [-1] * 2
 longStopl = [0.0] * 2
 shortStopl = [0.0] * 2
 varFuncl = [0.0] * 2
-dirl = [1] * 2
-hoot = [0.0] * 3
-loot = [0.0] * 3
+dirl = [-1] * 2
+hoot = []
+loot = []
 
-def Var_Func(df, length):
+vud1 = [0.0] * 9
+vdd1 = [0.0] * 9
+vud1l = [0.0] * 9
+vdd1l = [0.0] * 9
+
+def Var_Func(df, index, hlootSrc, hlootSrclowest, length, hllength, mav):
+    global varFunc
+    global vud1
+    global vdd1
+    hlootSrcPrevious = 0
     try:
-        global hlootSrc
-        global varFunc
-        hlootSrcPrevious = hlootSrc[1]
+       hlootSrcPrevious = hlootSrc[index - 1]
+    except:
+        hlootSrcPrevious = hlootSrc[index]
+
+    try:
         
         valpha = 2 / (length + 1)
         
-        vud1 = np.where(hlootSrc[0] > hlootSrcPrevious, hlootSrc[0] - hlootSrcPrevious, 0)
-        vdd1 = np.where(hlootSrc[0] < hlootSrcPrevious, hlootSrcPrevious - hlootSrc[0], 0)
+        vud1 = [np.where(hlootSrc[index] > hlootSrcPrevious, hlootSrc[index] - hlootSrcPrevious, 0)] + vud1[:-1]
+        vdd1 = [np.where(hlootSrc[index] < hlootSrcPrevious, hlootSrcPrevious - hlootSrc[index], 0)] + vdd1[:-1] 
         
-        vUD = l_sum(df, 'open', vud1, 9)
-        vDD = l_sum(df, 'open', vdd1, 9)
+        # print(vud1)
+        vUD = l_sum(vud1, 9)
+        vDD = l_sum(vdd1, 9)
         
         vCMO = (vUD - vDD) / (vUD + vDD) if (vUD + vDD) != 0 else 0
         
-        varFunc = [(valpha * abs(vCMO) * hlootSrc[0]) + (1 - valpha * abs(vCMO)) * varFunc[1]] + varFunc[:-1] 
+        varFunc = [(valpha * abs(vCMO) * hlootSrc[index]) + (1 - valpha * abs(vCMO)) * varFunc[1]] + varFunc[:-1] 
         # Shift values in varFunc list to make space for the new VAR value       
-        h.logger.info(f"Var_Func {varFunc[0]}")
+        # h.logger.info(f"Var_Func {varFunc[0]}")
         return varFunc[0]
     except Exception as e:
         h.logger.warning(f"Var_Func {e}")
 
-def Var_Funcl(df, length):
+def Var_Funcl(df, index, hlootSrc, hlootSrclowest, length, hllength, mav):
     try:
-        global hlootSrclowest
         global varFuncl
-        hlootSrclowestPrevious = hlootSrclowest[1]
+        global vud1l 
+        global vdd1l
+        hlootSrclowestPrevious = 0
+        try:
+            hlootSrclowestPrevious = hlootSrclowest[index - 1]
+        except:
+            hlootSrclowestPrevious = hlootSrclowest[index]
 
         valphal = 2 / (length + 1)
 
-        vud1l = np.where(hlootSrclowest[0] > hlootSrclowestPrevious, hlootSrclowest[0] - hlootSrclowestPrevious, 0)
-        vdd1l = np.where(hlootSrclowest[0] < hlootSrclowestPrevious, hlootSrclowestPrevious - hlootSrclowest[0], 0)
-        vUDl = l_sum(df, 'open', vud1l, 9)
-        vDDl = l_sum(df, 'open', vdd1l, 9)
+        vud1l = [np.where(hlootSrclowest[index] > hlootSrclowestPrevious, hlootSrclowest[index] - hlootSrclowestPrevious, 0)] + vud1l[:-1] 
+        vdd1l = [np.where(hlootSrclowest[index] < hlootSrclowestPrevious, hlootSrclowestPrevious - hlootSrclowest[index], 0)] + vdd1l[:-1] 
+        vUDl = l_sum(vud1l, 9)
+        vDDl = l_sum(vdd1l, 9)
 
         vCMOl = (vUDl - vDDl) / (vUDl + vDDl) if (vUDl + vDDl) != 0 else 0
 
-        varFuncl = [(valphal * abs(vCMOl) * hlootSrclowest[0]) + (1 - valphal * abs(vCMOl)) * varFuncl[1]] + varFuncl[:-1]
+        varFuncl = [(valphal * abs(vCMOl) * hlootSrclowest[index]) + (1 - valphal * abs(vCMOl)) * varFuncl[1]] + varFuncl[:-1]
 
-        h.logger.info(f"Var_Funcl result {varFuncl[0]}")
+        # h.logger.info(f"Var_Funcl result {varFuncl[0]}")
         return varFuncl[0]
     except Exception as e:
         h.logger.warning(f"Var_Funcl {e}")
-
-# def Var_Func_old(df, length, hllength, recursioncount):
-#     delShift = 0
-#     if recursioncount == 0:
-#         return 0.0
-    
-#     valpha = 2 / (length + 1)
-    
-#     hlootSrc = l_highest(df, 'high', hllength + recursioncount)
-#     hlootSrcPrevious = l_highest(df, 'high', hllength + recursioncount + 1)
-    
-#     vud1 = np.where(hlootSrc > hlootSrcPrevious, hlootSrc - hlootSrcPrevious, 0)
-#     vdd1 = np.where(hlootSrc < hlootSrcPrevious, hlootSrcPrevious - hlootSrc, 0)
-    
-#     vUD = l_sum(df, 'open', vud1, 9)
-#     vDD = l_sum(df, 'open', vdd1, 9)
-    
-#     vCMO = (vUD - vDD) / (vUD + vDD) if (vUD + vDD) != 0 else 0
-    
-#     previous_VAR = Var_Func(df, length, hllength, recursioncount - 1)
-#     VAR = (valpha * abs(vCMO) * hlootSrc) + (1 - valpha * abs(vCMO)) * previous_VAR
-#     h.logger.info(f"Recursion Var_Func {VAR}")
-#     return VAR
 
 def Wwma_Func(hlootSrc, length):
     wwalpha = 1 / length
@@ -106,18 +98,6 @@ def Tsf_Func(hlootSrc, length):
     TSF = lrc + lrs
     return TSF
 
-# def Var_Funcl(hlootSrcl, length):
-#     valphal = 2 / (length + 1)
-#     vud1l = np.where(hlootSrcl > hlootSrcl.shift(1), hlootSrcl - hlootSrcl.shift(1), 0)
-#     vdd1l = np.where(hlootSrcl < hlootSrcl.shift(1), hlootSrcl.shift(1) - hlootSrcl, 0)
-#     vUDl = np.sum(vud1l, 9)
-#     vDDl = np.sum(vdd1l, 9)
-#     vCMOl = np.nan_to_num((vUDl - vDDl) / (vUDl + vDDl))
-#     VARl = np.zeros_like(hlootSrcl)
-#     for i in range(len(hlootSrcl)):
-#         VARl[i] = valphal * abs(vCMOl[i]) * hlootSrcl[i] + (1 - valphal * abs(vCMOl[i])) * (VARl[i-1] if i > 0 else 0)
-#     return VARl
-
 def Wwma_Funcl(hlootSrcl, length):
     wwalphal = 1 / length
     WWMAl = np.zeros_like(hlootSrcl)
@@ -138,7 +118,7 @@ def Tsf_Funcl(hlootSrcl, length):
     TSFl = lrcl + lrsl
     return TSFl
 
-def getMA(df, hlootSrc, hlootSrcPrevious, hlootSrclowest, hlootSrclowestPrevious, length, hllength, mav):
+def getMA(df, index, hlootSrc, hlootSrclowest, length, hllength, mav):
     if mav == 'SMA':
         return hlootSrc.rolling(window=length, min_periods=0).mean()
     elif mav == 'EMA':
@@ -152,7 +132,7 @@ def getMA(df, hlootSrc, hlootSrcPrevious, hlootSrclowest, hlootSrclowestPrevious
         sma1 = hlootSrc.rolling(window=math.ceil(length / 2), min_periods=0).mean()
         return sma1.rolling(window=math.floor(length / 2) + 1, min_periods=0).mean()
     elif mav == 'VAR':
-        return Var_Func(df, length)
+        return Var_Func(df, index, hlootSrc, hlootSrclowest, length, hllength, mav)
     elif mav == 'WWMA':
         return Wwma_Func(hlootSrc, length)
     elif mav == 'ZLEMA':
@@ -162,7 +142,7 @@ def getMA(df, hlootSrc, hlootSrcPrevious, hlootSrclowest, hlootSrclowestPrevious
     elif mav == 'HULL':
         return 2 * hlootSrc.ewm(span=length, adjust=False).mean() - hlootSrc.ewm(span=math.isqrt(length), adjust=False).mean()
 
-def getMAl(df, hlootSrclowest, length, hllength , mav):
+def getMAl(df, index, hlootSrc, hlootSrclowest, length, hllength, mav):
     if mav == 'SMA':
         return hlootSrclowest.rolling(window=length, min_periods=0).mean()
     elif mav == 'EMA':
@@ -176,7 +156,7 @@ def getMAl(df, hlootSrclowest, length, hllength , mav):
         sma1 = hlootSrclowest.rolling(window=math.ceil(length / 2), min_periods=0).mean()
         return sma1.rolling(window=math.floor(length / 2) + 1, min_periods=0).mean()
     elif mav == 'VAR':
-        return Var_Funcl(df, length)
+        return Var_Funcl(df, index, hlootSrc, hlootSrclowest, length, hllength, mav)
     elif mav == 'WWMA':
         return Wwma_Funcl(hlootSrclowest, length)
     elif mav == 'ZLEMA':
@@ -187,10 +167,13 @@ def getMAl(df, hlootSrclowest, length, hllength , mav):
         return 2 * hlootSrclowest.ewm(span=length, adjust=False).mean() - hlootSrclowest.ewm(span=math.isqrt(length), adjust=False).mean()
 
 
-def hloot(df, source, length, percent, hllength, hlootMav, useReverseOrderHLOOT):
+def hloot(df, hlooSource, length, percent, hllength, hlootMav, useReverseOrderHLOOT):
     # try:
-    global hlootSrc
-    global hlootSrclowest
+    # global hlootSrc
+    # global hlootSrclowest
+    long_signal = []
+    short_signal = []
+    reversedHOOTentry = []
     global longStop
     global shortStop
     global dir
@@ -200,82 +183,79 @@ def hloot(df, source, length, percent, hllength, hlootMav, useReverseOrderHLOOT)
     global hoot
     global loot
 
-    # hlootSrc[0] = l_highest(df['high'], hllength)
-    # hlootSrclowest[0] = l_lowest(df['low'], hllength)
-    # for col in df:
 
-    hlootSrc = [l_highest(df['high'], hllength)] + hlootSrc[:-1]
-    hlootSrcPrevious = hlootSrc[1]
-    hlootSrclowest = [l_lowest(df['low'], hllength)] + hlootSrclowest[:-1]
-    hlootSrclowestPrevious = hlootSrclowest[1]
-    # hlootSrc = ta.recent_high(df['high'], hllength)
-    # h.logger.info(f"hlootSrc  {hlootSrc}")
+    try:
+        if not df.empty and length:
+            # hlootSrc = [l_highest(df['high'], hllength)] + hlootSrc[:-1]
+            # h.logger.info(f'DF HIGH {df["high"]}')
+            hlootSrc = l_highest(df, 'high', hllength)
+            # hlootSrcPrevious = hlootSrc[1]
+            hlootSrclowest = l_lowest(df, 'low', hllength)
+            # hlootSrclowestPrevious = hlootSrclowest[1]
+            # h.logger.info(f"hlootSrc {hlootSrc}")
+            # h.logger.info(f"hlootSrclowest {hlootSrclowest}")
+            # build starting hoot and loot 2 items
+            for index in range(0, 2):
+                hoot.append(hlootSrc[0])
 
-    # hlootSrcPrevious = l_highest(df, 'high', hllength + 1)
-    # h.logger.info(f"hlootSrcPrevious {hlootSrcPrevious}")
+                loot.append(hlootSrclowest[0])
+            for index in range(len(df)):
+                MAvg = getMA(df, index, hlootSrc, hlootSrclowest, length, hllength, hlootMav)
+                fark = MAvg * percent * 0.01
+                longStop = [MAvg - fark] + longStop[:-1]
+                longStopPrev = l_nz(longStop[1], longStop[0])
+                longStopExec = np.where(MAvg > longStopPrev, np.maximum(longStop[0], longStopPrev), longStop[0])
+                shortStop = [MAvg + fark] + shortStop[:-1]
+                shortStopPrev = l_nz(shortStop[1], shortStop[0])
+                shortStopExec = np.where(MAvg < shortStopPrev, np.minimum(shortStop[0], shortStopPrev), shortStop[0])
+                tempDir = dir[0] if dir[0] != None else 1
+                if dir[0] == -1 and MAvg > shortStopPrev:
+                    tempDir = 1
+                elif dir[0] == 1 and MAvg < longStopPrev:
+                    tempDir = -1
+                dir = [tempDir] + dir[:-1]    
+                MT = longStopExec if dir[0] == 1 else shortStopExec
+                hoot.append(np.where(MAvg > MT, MT * (200 + percent) / 200, MT * (200 - percent) / 200))
+                HOTTC = 'blue'
+                # h.logger.info(f"HOOT {hoot}")
 
-    # hlootSrclowest = l_lowest(df, 'low', hllength)
-    # hlootSrclowestPrevious = l_lowest(df, 'low', hllength + 1)
-    # h.logger.info(f"hlootSrclowest {hlootSrclowest}")
+                MAvgl = getMAl(df, index, hlootSrc, hlootSrclowest, length, hllength, hlootMav)
+                farkl = MAvgl * percent * 0.01
+                longStopl = [MAvgl - farkl] + longStopl[:-1]
+                longStopPrevl = l_nz(longStopl[1], longStopl[0])
+                longStoplExec = np.where(MAvgl > longStopPrevl, np.maximum(longStopl[0], longStopPrevl), longStopl[0])
+                shortStopl = [MAvgl + farkl] + shortStop[:-1]
+                shortStopPrevl = l_nz(shortStopl[1], longStopl[0])
+                shortStoplExec = np.where(MAvgl < shortStopPrevl, np.minimum(shortStopl[0], shortStopPrevl), shortStopl[0])
+                # dirl[0] = 1
+                # dirl[0] = l_nz(dirl[1], dirl[0])
+
+                tempDirl = dirl[0] if dirl[0] != None else 1
+                if dirl[0] == -1 and MAvgl > shortStopPrevl:
+                    tempDirl = 1
+                elif dirl[0] == 1 and MAvgl < longStopPrevl:
+                    tempDirl = -1
+                dirl = [tempDirl] + dirl[:-1] 
+                # h.logger.info(dirl)
+                MTl = longStoplExec if dirl[0] == 1 else shortStoplExec
+                # loot = [np.where(MAvgl > MTl, MTl * (200 + percent) / 200, MTl * (200 - percent) / 200)] + loot[:-1]
+                loot.append(np.where(MAvgl > MTl, MTl * (200 + percent) / 200, MTl * (200 - percent) / 200))
+                LOTTC = 'red'
+                # h.logger.info(f"LOOT {loot}")
+                # h.logger.info(f"long exmpl {hoot} ")
+                if useReverseOrderHLOOT == False :
+                    long_signal.append(df[hlooSource][index] > hoot[index - 2])
+                    short_signal.append(df[hlooSource][index] < loot[index - 2])
+                    
+                if useReverseOrderHLOOT == True :
+                    short_signal.append(df[hlooSource][index] > hoot[index - 2])
+                    long_signal.append(df[hlooSource][index] < loot[index - 2])
+        # h.logger.info(f"hoot {hoot} ")
+        # h.logger.info(f"long_signal {long_signal}  ")
+        # h.logger.info(f"short_signal {short_signal} ")
+    except Exception as e:
+        h.logger.warning(f'DF {e}')
 
     
-    MAvg = getMA(df, hlootSrc, hlootSrcPrevious, hlootSrclowest, hlootSrclowestPrevious, length, hllength, hlootMav)
-    # return 0, 0, 0
-
-    fark = MAvg * percent * 0.01
-    longStop = [MAvg - fark] + longStop[:-1]
-    longStopPrev = l_nz(longStop[1], longStop[0])
-    longStopExec = np.where(MAvg > longStopPrev, np.maximum(longStop[0], longStopPrev), longStop[0])
-    shortStop = [MAvg + fark] + shortStop[:-1]
-    shortStopPrev = l_nz(shortStop[1], shortStop[0])
-    shortStopExec = np.where(MAvg < shortStopPrev, np.minimum(shortStop[0], shortStopPrev), shortStop[0])
-
-    h.logger.info(f"hlootSrc  longStop {longStop} shortStop {shortStop}")
-    
-    dir[0] = 1
-    dir[0] = l_nz(dir[1], dir[0])
-
-    dir[0] = dir[0] if dir[0] != None else 1
-    if dir[0] == -1 and MAvg > shortStopPrev:
-        dir[0] = 1
-    elif dir[0] == 1 and MAvg < longStopPrev:
-        dir[0] = -1
-    dir = [dir[0]] + dir[:-1]    
-    MT = longStopExec if dir[0] == 1 else shortStopExec
-    # hoot = [np.where(MAvg > MT, MT * (200 + percent) / 200, MT * (200 - percent) / 200)] + hoot[:-1]
-    hoot.insert(0,np.where(MAvg > MT, MT * (200 + percent) / 200, MT * (200 - percent) / 200))
-    HOTTC = 'blue'
-    h.logger.info(f"HOOT {hoot}")
-    # return 0, 0, 0
-    
-    MAvgl = getMAl(df,hlootSrclowest, length, hllength, hlootMav)
-    farkl = MAvgl * percent * 0.01
-    longStopl = [MAvgl - farkl] + longStopl[:-1]
-    longStopPrevl = l_nz(longStopl[1], longStopl[0])
-    longStoplExec = np.where(MAvgl > longStopPrevl, np.maximum(longStopl[0], longStopPrevl), longStopl[0])
-    shortStopl = [MAvgl + farkl] + shortStop[:-1]
-    shortStopPrevl = l_nz(shortStopl[1], longStopl[0])
-    shortStoplExec = np.where(MAvgl < shortStopPrevl, np.minimum(shortStopl[0], shortStopPrevl), shortStopl[0])
-    dirl[0] = 1
-    dirl[0] = l_nz(dirl[1], dirl[0])
-
-    dirl[0] = dirl[0] if dirl[0] != None else 1
-    if dirl[0] == -1 and MAvgl > shortStopPrevl:
-        dirl[0] = 1
-    elif dirl[0] == 1 and MAvgl < longStopPrevl:
-        dirl[0] = -1
-    dirl = [dirl[0]] + dirl[:-1] 
-    MTl = longStoplExec if dirl[0] == 1 else shortStoplExec
-    # loot = [np.where(MAvgl > MTl, MTl * (200 + percent) / 200, MTl * (200 - percent) / 200)] + loot[:-1]
-    loot.insert(0,np.where(MAvgl > MTl, MTl * (200 + percent) / 200, MTl * (200 - percent) / 200))
-    LOTTC = 'red'
-    h.logger.info(f"LOOT {loot}")
-    h.logger.info(f"long exmpl {hoot} ")
-
-    long_signal = (source > hoot[2])
-    short_signal = (source < loot[2])
-    reversedHOOTentry = (source < hoot[2]) & (source > loot[2])
-
-    return long_signal, short_signal, reversedHOOTentry
-    # except Exception as e:
-    #     h.logger.warning(f"hloot ISSUE {e}")
+    # MAvg = getMA(df, hlootSrc, hlootSrcPrevious, hlootSrclowest, hlootSrclowestPrevious, length, hllength, hlootMav)
+    return long_signal, short_signal, hoot, loot

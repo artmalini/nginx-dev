@@ -40,7 +40,7 @@ class visualGraph :
                     df['close_datetime'] = pd.to_datetime(df['close_datetime'])
                     df.set_index('close_datetime', inplace=True)
                     # Calculate long and short entry points
-                    long_entry, short_entry = lC(df)
+                    lorenzian = lC(df)
                     # h.logger.info(f"Long entry {long_entry}")
                     # return
                     # h.logger.info(f"DF {df}")
@@ -58,11 +58,11 @@ class visualGraph :
 
                     # Loop through signals and determine entry points based on current position
                     for i in range(len(df)):
-                        if long_entry[i]:
+                        if lorenzian["long_entry"][i]:
                             if current_position != 'long':
                                 long_entry_points.append(i)
                                 current_position = 'long'
-                        elif short_entry[i]:
+                        elif lorenzian["short_entry"][i]:
                             if current_position != 'short':
                                 short_entry_points.append(i)
                                 current_position = 'short'
@@ -99,8 +99,55 @@ class visualGraph :
                         name='Short Entry'
                     )
 
+                    if len(lorenzian["high_HLOOT"]) > 3 and len(lorenzian["low_HLOOT"]) > 3:
+                        hoot_2_trace = go.Scatter(
+                            x=df.index,
+                            y=[None] * 2 + lorenzian["high_HLOOT"][:-2],  # Assuming hoot[2] is a list of values corresponding to each index 
+                            mode='lines',
+                            line=dict(color='blue', width=1),   #  dash='dash'
+                            name='Hoot[2]'
+                        )
+
+                        # Create loot[2] trace
+                        loot_2_trace = go.Scatter(
+                            x=df.index,
+                            y=[None] * 2 + lorenzian["low_HLOOT"][:-2],  # Assuming loot[2] is a list of values corresponding to each index
+                            mode='lines',
+                            line=dict(color='red', width=1),
+                            name='Loot[2]'
+                        )
+
+                    if len(lorenzian["ema_coord"]) > 3 : 
+                        ema_long_trace = go.Scatter(
+                            x=df.index,
+                            y=lorenzian["ema_coord"], 
+                            mode='lines',
+                            line=dict(color='#64c53c', width=2), # light green
+                            name='ema coord'
+                        )
+
+                    if len(lorenzian["sma_coord"]) > 3 : 
+                        sma_long_trace = go.Scatter(
+                            x=df.index,
+                            y=lorenzian["sma_coord"], 
+                            mode='lines',
+                            line=dict(color='#19e316', width=2), # light green
+                            name='sma coord'
+                        )
+
                     # Create figure with Candlestick, long entry, and short entry traces
-                    fig = go.Figure(data=[candlestick_trace, long_entry_points_trace, short_entry_points_trace])
+                    dataObjects = [candlestick_trace, long_entry_points_trace, short_entry_points_trace]
+
+                    if len(lorenzian["high_HLOOT"]) > 3 and len(lorenzian["low_HLOOT"]) > 3:
+                        dataObjects.append(hoot_2_trace)
+                        dataObjects.append(loot_2_trace)
+
+                    if len(lorenzian["ema_coord"]) > 3 :
+                        dataObjects.append(ema_long_trace)
+                    if len(lorenzian["sma_coord"]) > 3 :
+                        dataObjects.append(sma_long_trace)
+
+                    fig = go.Figure(data=dataObjects)
 
                     # Update layout
                     fig.update_layout(
@@ -111,10 +158,10 @@ class visualGraph :
                     fig.update_layout(xaxis_rangeslider_visible=False)
 
                     # Show the plot with WebGL rendering
-                    # fig.show()
+                    fig.show()
 
 
-                    # trackBenefits(long_entry, short_entry, df, 1000)
+                    trackBenefits(lorenzian["long_entry"], lorenzian["short_entry"], df, 1000)
 
             else:
                 print("Column 'close_datetime' not found in DataFrame.")
