@@ -192,6 +192,65 @@ def l_sma(df, source, length):
         h.logger.warning(f'libmath l_sma {e}')
         return sma_values
     
+def l_pivothigh(df, superLeft, superRight):
+    pivotHigh = []
+    try:
+        if not df.empty:
+            dfLen = len(df)
+            for index in range(dfLen):
+                pleft = []
+                pright = []
+                for left in range(superLeft):
+                    leftindex = index - left
+                    if leftindex >= 0:  # Ensure index is non-negative
+                        pleft.append(df["high"].iloc[leftindex])
+                for right in range(superRight):
+                    rightindex = index + right
+                    if rightindex < dfLen:  # Ensure index is within range
+                        pright.append(df["high"].iloc[rightindex])
+
+                pivotCurrentCandle = df["high"].iloc[index]
+                noLeftBiggerThanCurrent = all(left <= pivotCurrentCandle for left in pleft)
+                noRightBiggerThanCurrent = all(right <= pivotCurrentCandle for right in pright)
+                
+                if noLeftBiggerThanCurrent and noRightBiggerThanCurrent:
+                    pivotHigh.append(pivotCurrentCandle)
+                else:
+                    pivotHigh.append(None)
+    except Exception as e:
+        h.logger.warning(f'l_pivothigh {e}')
+    return pivotHigh
+
+
+def l_pivotlow(df, superLeft, superRight):
+    pivotLow = []
+    try:
+        if not df.empty:
+            dfLen = len(df)
+            for index in range(dfLen):
+                pleft = []
+                pright = []
+                for left in range(superLeft):
+                    leftindex = index - left
+                    if leftindex >= 0:  # Ensure index is non-negative
+                        pleft.append(df["low"].iloc[leftindex])
+                for right in range(superRight):
+                    rightindex = index + right
+                    if rightindex < dfLen:  # Ensure index is within range
+                        pright.append(df["low"].iloc[rightindex])
+
+                pivotCurrentCandle = df["low"].iloc[index]
+                noLeftBiggerThanCurrent = all(left >= pivotCurrentCandle for left in pleft)
+                noRightBiggerThanCurrent = all(right >= pivotCurrentCandle for right in pright)
+                
+                if noLeftBiggerThanCurrent and noRightBiggerThanCurrent:
+                    pivotLow.append(pivotCurrentCandle)
+                else:
+                    pivotLow.append(None)
+    except Exception as e:
+        h.logger.warning(f'l_pivotlow {e}')
+    return pivotLow
+    
 def l_sum(value, length):
     sum = 0
     try:

@@ -135,6 +135,42 @@ class visualGraph :
                             name='sma coord'
                         )
 
+                    if len(lorenzian["super_coord_long"]) > 3 :
+                        super_long_trace = go.Scatter(
+                            x=df.index,
+                            y=lorenzian["super_coord_long"], 
+                            mode='lines',
+                            line=dict(color='#19e316', width=2), # light green
+                            name='Supertrend Long'
+                        )
+
+                    if len(lorenzian["super_coord_short"]) > 3 :
+                        super_short_trace = go.Scatter(
+                            x=df.index,
+                            y=lorenzian["super_coord_short"], 
+                            mode='lines',
+                            line=dict(color='blue', width=2), # blue
+                            name='Supertrend Short'
+                        )
+
+                    if len(lorenzian["zerocoord_fast"]) > 3 :
+                        zero_long_trace = go.Scatter(
+                            x=df.index,
+                            y=lorenzian["zerocoord_fast"], 
+                            mode='lines',
+                            line=dict(color='purple', width=1), # purple
+                            name='Zero coord Fast'
+                        )
+
+                    if len(lorenzian["zerocoord_slow"]) > 3 :
+                        zero_short_trace = go.Scatter(
+                            x=df.index,
+                            y=lorenzian["zerocoord_slow"], 
+                            mode='lines',
+                            line=dict(color='gray', width=1),
+                            name='Zero coord Slow'
+                        ) 
+
                     # Create figure with Candlestick, long entry, and short entry traces
                     dataObjects = [candlestick_trace, long_entry_points_trace, short_entry_points_trace]
 
@@ -146,6 +182,14 @@ class visualGraph :
                         dataObjects.append(ema_long_trace)
                     if len(lorenzian["sma_coord"]) > 3 :
                         dataObjects.append(sma_long_trace)
+                    if len(lorenzian["super_coord_long"]) > 3 :
+                        dataObjects.append(super_long_trace)
+                    if len(lorenzian["super_coord_short"]) > 3 :
+                        dataObjects.append(super_short_trace)
+                    if len(lorenzian["zerocoord_fast"]) > 3 :
+                        dataObjects.append(zero_long_trace)
+                    if len(lorenzian["zerocoord_slow"]) > 3 :
+                        dataObjects.append(zero_short_trace)
 
                     fig = go.Figure(data=dataObjects)
 
@@ -158,7 +202,7 @@ class visualGraph :
                     fig.update_layout(xaxis_rangeslider_visible=False)
 
                     # Show the plot with WebGL rendering
-                    fig.show()
+                    # fig.show()
 
 
                     trackBenefits(lorenzian["long_entry"], lorenzian["short_entry"], df, 1000)
