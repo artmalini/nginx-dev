@@ -266,6 +266,7 @@ def l_sum(value, length):
 
 # pd.isnull(source)
 def l_nz(source, replacement):
+    # return np.nan_to_num(source, nan=replacement)
     if source == 0 :
         return replacement
     return source
