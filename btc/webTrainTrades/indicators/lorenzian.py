@@ -4,59 +4,6 @@ import pandas as pd
 import numpy as np
 import helpers as h
 
-# export rescale(series float src, float oldMin, float oldMax, float newMin, float newMax) =>
-#     newMin + (newMax - newMin) * (src - oldMin) / math.max(oldMax - oldMin, 10e-10)
-
-# export normalize(series float src, float min, float max) => 
-#     var _historicMin =  10e10
-#     var _historicMax = -10e10
-#     _historicMin := math.min(nz(src, _historicMin), _historicMin)
-#     _historicMax := math.max(nz(src, _historicMax), _historicMax)
-#     min + (max - min) * (src - _historicMin) / math.max(_historicMax - _historicMin, 10e-10)
-
-
-
-
-# export n_wt(series float src, simple int n1=10, simple int n2=11) =>
-#     ema1 = ta.ema(src, n1)
-#     ema2 = ta.ema(math.abs(src - ema1), n1)
-#     ci = (src - ema1) / (0.015 * ema2)
-#     wt1 = ta.ema(ci, n2) // tci
-#     wt2 = ta.sma(wt1, 4)
-#     normalize(wt1 - wt2, 0, 1)
-
-# export n_rsi(series float src, simple int n1, simple int n2) =>
-#     rescale(ta.ema(ta.rsi(src, n1), n2), 0, 100, 0, 1)
-
-# export n_cci(series float src, simple int n1, simple int n2) =>
-#     normalize(ta.ema(ta.cci(src, n1), n2), 0, 1)
-
-# export n_adx(series float highSrc, series float lowSrc, series float closeSrc, simple int n1) =>
-#     length = n1
-#     th = 20
-#     tr = math.max(math.max(highSrc - lowSrc, math.abs(highSrc - nz(closeSrc[1]))), math.abs(lowSrc - nz(closeSrc[1])))
-#     directionalMovementPlus = highSrc - nz(highSrc[1]) > nz(lowSrc[1]) - lowSrc ? math.max(highSrc - nz(highSrc[1]), 0) : 0
-#     negMovement = nz(lowSrc[1]) - lowSrc > highSrc - nz(highSrc[1]) ? math.max(nz(lowSrc[1]) - lowSrc, 0) : 0
-#     trSmooth = 0.0
-#     trSmooth := nz(trSmooth[1]) - nz(trSmooth[1]) / length + tr
-#     smoothDirectionalMovementPlus = 0.0
-#     smoothDirectionalMovementPlus := nz(smoothDirectionalMovementPlus[1]) - nz(smoothDirectionalMovementPlus[1]) / length + directionalMovementPlus
-#     smoothnegMovement = 0.0
-#     smoothnegMovement := nz(smoothnegMovement[1]) - nz(smoothnegMovement[1]) / length + negMovement
-#     diPositive = smoothDirectionalMovementPlus / trSmooth * 100
-#     diNegative = smoothnegMovement / trSmooth * 100
-#     dx = math.abs(diPositive - diNegative) / (diPositive + diNegative) * 100 
-#     adx = ta.rma(dx, length)
-#     rescale(adx, 0, 100, 0, 1)
-
-# series_from(feature_string, _close, _high, _low, _hlc3, f_paramA, f_paramB) =>
-#     switch feature_string
-#         "RSI" => ml.n_rsi(_close, f_paramA, f_paramB)
-#         "WT" => ml.n_wt(_hlc3, f_paramA, f_paramB)
-#         "CCI" => ml.n_cci(_close, f_paramA, f_paramB)
-#         "ADX" => ml.n_adx(_high, _low, _close, f_paramA)
-
-
     
 f1Array = []
 f2Array = []
@@ -102,30 +49,30 @@ def get_lorentzian_distance(i, feature_count) :
     try:
         if feature_count == 5:
             distance = (
-                np.log(1 + (abs(f1Array[0] - f1Array[i]))) +
-                np.log(1 + (abs(f2Array[0] - f2Array[i]))) +
-                np.log(1 + (abs(f3Array[0] - f3Array[i]))) +
-                np.log(1 + (abs(f4Array[0] - f4Array[i]))) +
-                np.log(1 + (abs(f5Array[0] - f5Array[i])))
+                math.log(1 + (abs(f1Array[0] - f1Array[i]))) +
+                math.log(1 + (abs(f2Array[0] - f2Array[i]))) +
+                math.log(1 + (abs(f3Array[0] - f3Array[i]))) +
+                math.log(1 + (abs(f4Array[0] - f4Array[i]))) +
+                math.log(1 + (abs(f5Array[0] - f5Array[i])))
             )
         if feature_count == 4:
             distance = (
-                np.log(1 + (abs(f1Array[0] - f1Array[i]))) +
-                np.log(1 + (abs(f2Array[0] - f2Array[i]))) +
-                np.log(1 + (abs(f3Array[0] - f3Array[i]))) +
-                np.log(1 + (abs(f4Array[0] - f4Array[i])))
+                math.log(1 + (abs(f1Array[0] - f1Array[i]))) +
+                math.log(1 + (abs(f2Array[0] - f2Array[i]))) +
+                math.log(1 + (abs(f3Array[0] - f3Array[i]))) +
+                math.log(1 + (abs(f4Array[0] - f4Array[i])))
             )
         if feature_count == 3:
             distance = (
-                np.log(1 + (abs(f1Array[0] - f1Array[i]))) +
-                np.log(1 + (abs(f2Array[0] - f2Array[i]))) +
-                np.log(1 + (abs(f3Array[0] - f3Array[i])))
+                math.log(1 + (abs(f1Array[0] - f1Array[i]))) +
+                math.log(1 + (abs(f2Array[0] - f2Array[i]))) +
+                math.log(1 + (abs(f3Array[0] - f3Array[i])))
             )
 
         if feature_count < 3:
             distance = (
-                np.log(1 + (abs(f1Array[0] - f1Array[i]))) +
-                np.log(1 + (abs(f2Array[0] - f2Array[i])))
+                math.log(1 + (abs(f1Array[0] - f1Array[i]))) +
+                math.log(1 + (abs(f2Array[0] - f2Array[i])))
             )
     except Exception as e:
         h.logger.warning(f'get_lorentzian_distance {e}')
@@ -505,15 +452,22 @@ def lorenzian(df, source, neighborsCount, maxBarsBack, featureSeries, featureCou
                 "neutral": 0
             }
             y_train_series = [direction["neutral"], direction["neutral"],direction["neutral"],direction["neutral"]]
+            # y_train_series = [0]
             feature_count = featureCount
             y_train_array = [0]
-            predictions = [0]
-            prediction = 0
-            signal = direction["neutral"]
-            distances = [0]
-            last_distance = -1.0
+            distances = []
+            predictions = []
+            # distances = [0] * (neighborsCount)
+            # predictions = [0] * (neighborsCount)
+            # countPredictions = 0
+            # prediction = 0            
+            # last_distance = -1.0
+            
             
             for index in range(len(df)):
+                prediction = 0
+                last_distance = -1.0
+
                 close = [df["close"].iloc[index]] + close[:-1]
                 high = [df["high"].iloc[index]] + high[:-1]
                 low = [df["low"].iloc[index]] + low[:-1]
@@ -554,6 +508,7 @@ def lorenzian(df, source, neighborsCount, maxBarsBack, featureSeries, featureCou
                 #     h.logger.info(f"check {len(f4Array)} f4Array {f4Array}")
                 #     h.logger.info(f"check {len(f5Array)} f5Array {f5Array}")
                 #     return
+                # h.logger.info(f"y_train_array[i] {y_train_array[i]}  i: {i}")
 
                 if index >= maxBarsBack:
                     for i in range(sizeLoop + 1):
@@ -561,13 +516,28 @@ def lorenzian(df, source, neighborsCount, maxBarsBack, featureSeries, featureCou
                         if d >= last_distance and i % 4 == 0:
                             last_distance = d
                             distances.append(d)
-                            # h.logger.info(f"y_train_array[i] {y_train_array[i]}  i: {i}")
-                            predictions.append(round(y_train_array[i]))
+                            predictions.append(y_train_array[i])
                             if len(predictions) > neighborsCount:
+                                h.logger.info(f"len(predictions) {len(predictions)}  len(distances) {len(distances)} round(neighborsCount * 3 / 4) {round(neighborsCount * 3 / 4)} distances {distances[round(neighborsCount * 3 / 4)]} lorenzian dist {d} ")
+
                                 last_distance = distances[round(neighborsCount * 3 / 4)]
                                 distances.pop(0)
                                 predictions.pop(0)
                     prediction = sum(predictions)
+
+                # if index >= maxBarsBack:
+                #     for i in range(sizeLoop + 1):
+                #         d = get_lorentzian_distance(i, feature_count)
+                #         if d >= last_distance and i % 4 == 0:
+                #             last_distance = d
+                #             distances = [d] + distances[:-1]
+                #             predictions = [y_train_array[i]] + predictions[:-1]
+                #             countPredictions += 1
+
+                #             if countPredictions > neighborsCount:
+                #                 last_distance = distances[round((neighborsCount * 3 / 4) - 1)]
+                #                 countPredictions -= 1
+                #     prediction = sum(predictions)
                     # print(prediction)
 
                 # if index == 4001:
