@@ -452,16 +452,17 @@ def lorenzian(df, source, neighborsCount, maxBarsBack, featureSeries, featureCou
                 "short": -1, 
                 "neutral": 0
             }
-            y_train_series = [direction["neutral"], direction["neutral"],direction["neutral"],direction["neutral"]]
+            y_train_series = np.array([direction["neutral"], direction["neutral"],direction["neutral"],direction["neutral"]])
             # y_train_series = [0]
             feature_count = featureCount
-            y_train_array = [0]
+            y_train_array = np.zeros(maxBarsBack)
             # distances = []
             # predictions = []
             distances = [0] * (neighborsCount)
             predictions = [0] * (neighborsCount)
             countPredictions = 0
             # prediction = 0
+            # sizeLoop = np.zeros(maxBarsBack - 1)
             
             distancesIndex = round((neighborsCount * 3 / 4)) - 1
             if distancesIndex < 0:
@@ -484,21 +485,30 @@ def lorenzian(df, source, neighborsCount, maxBarsBack, featureSeries, featureCou
                     hlc3 = [hlResult / 3] + hlc3[:-1]
                     hlc3Ci = [hlResult / 3] + hlc3Ci[:-1]
 
-                size = min(maxBarsBack - 1, len(y_train_array) - 1)
-                sizeLoop = min(maxBarsBack - 1, size)
+                # size = min(maxBarsBack - 1, len(y_train_array) - 1)
+                # sizeLoop = min(maxBarsBack - 1, size)
+                sizeLoop = np.zeros(maxBarsBack)
                 shiftindex = index - 4
 
+                # if index >= maxBarsBack:
+                #     h.logger.info(f"SIZE LOOP {len(sizeLoop)}")
+
                 if shiftindex <= 0 :
-                    y_train_series = [direction["neutral"]] + y_train_series[:-1]
+                    y_train_series[-1] = direction["neutral"]
+                    y_train_series = np.roll(y_train_series, 1)
                 if shiftindex > 0 :
                     if source.iloc[shiftindex] < source.iloc[index]:
-                        y_train_series = [direction["short"]] + y_train_series[:-1]
+                        y_train_series[-1] = direction["short"]
+                        y_train_series = np.roll(y_train_series, 1)
                     if source.iloc[shiftindex] > source.iloc[index] :
-                        y_train_series = [direction["long"]] + y_train_series[:-1]
+                        y_train_series[-1] = direction["long"]
+                        y_train_series = np.roll(y_train_series, 1)
                     if source.iloc[shiftindex] == source.iloc[index] :
-                        y_train_series = [direction["neutral"]] + y_train_series[:-1]
+                        y_train_series[-1] = direction["neutral"]
+                        y_train_series = np.roll(y_train_series, 1)
 
-                y_train_array.append(y_train_series[0])
+                y_train_array[-1] = y_train_series[0]
+                y_train_array = np.roll(y_train_array, 1)
                 f1Array = [(series_from(close, featureSeries["f1_string"]["Feature"], featureSeries["f1_string"]["f1_paramA"], featureSeries["f1_string"]["f1_paramB"]))] + f1Array[:-1]
                 f2Array = [(series_from(hlc3, featureSeries["f2_string"]["Feature"], featureSeries["f2_string"]["f1_paramA"], featureSeries["f2_string"]["f1_paramB"]))] + f2Array[:-1]
                 f3Array = [(series_from(close, featureSeries["f3_string"]["Feature"], featureSeries["f3_string"]["f1_paramA"], featureSeries["f3_string"]["f1_paramB"]))] + f3Array[:-1]
@@ -515,24 +525,8 @@ def lorenzian(df, source, neighborsCount, maxBarsBack, featureSeries, featureCou
                 #     return
                 # h.logger.info(f"y_train_array[i] {y_train_array[i]}  i: {i}")
 
-                # if index >= maxBarsBack:
-                #     for i in range(sizeLoop + 1):
-                #         d = get_lorentzian_distance(i, feature_count)
-                #         if d >= last_distance and i % 4 == 0:
-                #             last_distance = d
-                #             distances.append(d)
-                #             predictions.append(y_train_array[i])
-                #             if len(predictions) > neighborsCount:
-                #                 # h.logger.info(f"len(predictions) {len(predictions)}  len(distances) {len(distances)} round(neighborsCount * 3 / 4) {round(neighborsCount * 3 / 4)} distances {distances[round(neighborsCount * 3 / 4)]} lorenzian dist {d} ")
-                #                 # h.logger.info(f"predictions {predictions} distances {distances}")
-                #                 last_distance = distances[round(neighborsCount * 3 / 4)]
-                #                 distances.pop(0)
-                #                 predictions.pop(0)
-                #                 # h.logger.info(f"predictions red {predictions}")
-                #     prediction = sum(predictions)
-
                 if index >= maxBarsBack:
-                    for i in range(sizeLoop + 1):
+                    for i in range(len(sizeLoop)):
                         d = get_lorentzian_distance(i, feature_count)
                         if d >= last_distance and i % 4 == 0:
                             last_distance = d
