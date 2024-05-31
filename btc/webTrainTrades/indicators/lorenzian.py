@@ -2,6 +2,7 @@ from indicators.libmath import l_nz
 import math
 import pandas as pd
 import numpy as np
+from numba import njit, prange
 import helpers as h
 
     
@@ -455,18 +456,22 @@ def lorenzian(df, source, neighborsCount, maxBarsBack, featureSeries, featureCou
             # y_train_series = [0]
             feature_count = featureCount
             y_train_array = [0]
-            distances = []
-            predictions = []
-            # distances = [0] * (neighborsCount)
-            # predictions = [0] * (neighborsCount)
-            # countPredictions = 0
-            # prediction = 0            
-            # last_distance = -1.0
+            # distances = []
+            # predictions = []
+            distances = [0] * (neighborsCount)
+            predictions = [0] * (neighborsCount)
+            countPredictions = 0
+            # prediction = 0
             
-            
+            distancesIndex = round((neighborsCount * 3 / 4)) - 1
+            if distancesIndex < 0:
+                distancesIndex = 0
+            if distancesIndex >= neighborsCount:
+                distancesIndex = neighborsCount - 1
+
             for index in range(len(df)):
-                prediction = 0
                 last_distance = -1.0
+                prediction = 0                
 
                 close = [df["close"].iloc[index]] + close[:-1]
                 high = [df["high"].iloc[index]] + high[:-1]
@@ -510,37 +515,39 @@ def lorenzian(df, source, neighborsCount, maxBarsBack, featureSeries, featureCou
                 #     return
                 # h.logger.info(f"y_train_array[i] {y_train_array[i]}  i: {i}")
 
-                if index >= maxBarsBack:
-                    for i in range(sizeLoop + 1):
-                        d = get_lorentzian_distance(i, feature_count)
-                        if d >= last_distance and i % 4 == 0:
-                            last_distance = d
-                            distances.append(d)
-                            predictions.append(y_train_array[i])
-                            if len(predictions) > neighborsCount:
-                                h.logger.info(f"len(predictions) {len(predictions)}  len(distances) {len(distances)} round(neighborsCount * 3 / 4) {round(neighborsCount * 3 / 4)} distances {distances[round(neighborsCount * 3 / 4)]} lorenzian dist {d} ")
-
-                                last_distance = distances[round(neighborsCount * 3 / 4)]
-                                distances.pop(0)
-                                predictions.pop(0)
-                    prediction = sum(predictions)
-
                 # if index >= maxBarsBack:
                 #     for i in range(sizeLoop + 1):
                 #         d = get_lorentzian_distance(i, feature_count)
                 #         if d >= last_distance and i % 4 == 0:
                 #             last_distance = d
-                #             distances = [d] + distances[:-1]
-                #             predictions = [y_train_array[i]] + predictions[:-1]
-                #             countPredictions += 1
-
-                #             if countPredictions > neighborsCount:
-                #                 last_distance = distances[round((neighborsCount * 3 / 4) - 1)]
-                #                 countPredictions -= 1
+                #             distances.append(d)
+                #             predictions.append(y_train_array[i])
+                #             if len(predictions) > neighborsCount:
+                #                 # h.logger.info(f"len(predictions) {len(predictions)}  len(distances) {len(distances)} round(neighborsCount * 3 / 4) {round(neighborsCount * 3 / 4)} distances {distances[round(neighborsCount * 3 / 4)]} lorenzian dist {d} ")
+                #                 # h.logger.info(f"predictions {predictions} distances {distances}")
+                #                 last_distance = distances[round(neighborsCount * 3 / 4)]
+                #                 distances.pop(0)
+                #                 predictions.pop(0)
+                #                 # h.logger.info(f"predictions red {predictions}")
                 #     prediction = sum(predictions)
+
+                if index >= maxBarsBack:
+                    for i in range(sizeLoop + 1):
+                        d = get_lorentzian_distance(i, feature_count)
+                        if d >= last_distance and i % 4 == 0:
+                            last_distance = d
+                            distances = distances[1:] + [d]
+                            predictions = predictions[1:] + [y_train_array[i]]
+                            countPredictions += 1
+
+                            if countPredictions == neighborsCount:
+                                # h.logger.info(f"countPredictions {countPredictions} len(predictions) {len(predictions)}  len(distances) {len(distances)} round((neighborsCount * 3 / 4) - 1) {round((neighborsCount * 3 / 4) - 1)} distances {distances[round((neighborsCount * 3 / 4) - 1)]} lorenzian dist {d} ")
+                                last_distance = distances[distancesIndex]
+                                countPredictions -= 1
+                    prediction = sum(predictions)
                     # print(prediction)
 
-                # if index == 4001:
+                # if index == 14001:
                 #     return
                 
                 if prediction > 0 :
