@@ -1,0 +1,51 @@
+{
+    "KEY": "Zebra1beZ",
+    "EXCHANGES": {
+         "BYBIT-FUTURES": {
+           "ENABLED": true,
+           "PROD": {
+             "API_KEY": "4atvAeQSb4aZgLtH0e",
+             "API_SECRET": "s0qjrm4vTTkORdJd6JbyjBOsy32O08pRGYbH"
+             
+           },
+           "TEST": {
+             "API_KEY": "rWb1utZkLZ3mnBWafX",
+             "API_SECRET": "3mW20WrAmBosrZgPj7gx39jiIDJyzHbwx4an"
+           }
+         },
+         "BYBIT-SPOT": {
+           "ENABLED": true,
+           "PROD": {
+             "API_KEY": "4atvAeQSb4aZgLtH0e",
+             "API_SECRET": "s0qjrm4vTTkORdJd6JbyjBOsy32O08pRGYbH"
+             
+           },
+           "TEST": {
+             "API_KEY": "rWb1utZkLZ3mnBWafX",
+             "API_SECRET": "3mW20WrAmBosrZgPj7gx39jiIDJyzHbwx4an"
+           }
+         },
+         "BINANCE-FUTURES": {
+           "ENABLED": true,
+           "PROD": {
+             "API_KEY": "JgTHvWI3RF0jaO4PSAvy6vghTqmv9Hp8OrbnBKhm7HSFzkxIc9SXAicSntoYZiFg",
+             "API_SECRET": "xoycmWzJETtedpk6HjvbuDeSGOypl0JhqzCxNgj0agNo3iJWiHjA0emqpzIPffao"
+           },
+           "TEST": {
+             "API_KEY": "972df421a9ef24aa04e5a1a32c09d72bd08e89bad6b92da86ebbfaba2c58e3c2",
+             "API_SECRET": "ea4ddcd76f9fb71015924e5558222ce8182414fe1f1dab5a8f7597c6b282de1e"
+           }
+         },
+         "BINANCE-SPOT": {
+           "ENABLED": true,
+           "PROD": {
+             "API_KEY": "JgTHvWI3RF0jaO4PSAvy6vghTqmv9Hp8OrbnBKhm7HSFzkxIc9SXAicSntoYZiFg",
+             "API_SECRET": "xoycmWzJETtedpk6HjvbuDeSGOypl0JhqzCxNgj0agNo3iJWiHjA0emqpzIPffao"
+           },
+           "TEST": {
+             "API_KEY": "TMDbBLgcbiEZGQMJ6ckfSutp81GcXPSe8yIqxp2D7jveoosJ5QHdHgR48mgwRkYr",
+             "API_SECRET": "D1qwMZvK9EcBwIVMmmf4h6US9Bt6rDAQ83FudGHz2DmEXRR2wGTRKXIza97156Yk"
+           }
+         }
+    }
+ }

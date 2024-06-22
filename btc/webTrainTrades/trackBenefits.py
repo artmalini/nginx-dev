@@ -1,6 +1,11 @@
 import pandas as pd
 import helpers as h
 
+def convertToPositiveINumber(nbr1) :
+	if nbr1 < 0 :
+		return -1 * nbr1
+	return nbr1
+
 def trackBenefits(long_entry, short_entry, df, money):
     # Track current position and starting capital
     current_position = None
@@ -67,8 +72,9 @@ def trackBenefits(long_entry, short_entry, df, money):
 
         # Calculate max volatility as percentage
         entry_price = df.loc[trade['Entry Time'], 'close']
-        max_volatility_percent = (max_volatility / entry_price) * 100
+        max_volatility_percent = convertToPositiveINumber(max_volatility / entry_price) * 100
         h.logger.info(f"{count} | Entry Type: {trade['Entry Type']} | Entry Price: {entry_price} | Exit Price: {exit_price} | Entry Time: {trade['Entry Time']} | Exit Time: {trade['Exit Time']} | Profit/Loss (%): {round(trade['Profit/Loss (%)'], 2)} | Volatility: {round(max_volatility_percent, 2)}")
+        # h.logger.info(f"{count} | Entry Type: {trade['Entry Type']} | Entry Price: {trade['Entry Price']} | Exit Price: {trade['Exit Price']} | Entry Time: {trade['Entry Time']} | Exit Time: {trade['Exit Time']} | Profit/Loss (%): {round(trade['Profit/Loss (%)'], 2)} | Volatility: {round(max_volatility_percent, 2)}")
         count += 1
 
     # Overall profit/loss since strategy started

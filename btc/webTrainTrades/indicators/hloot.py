@@ -167,13 +167,12 @@ def getMAl(df, index, hlootSrc, hlootSrclowest, length, hllength, mav):
         return 2 * hlootSrclowest.ewm(span=length, adjust=False).mean() - hlootSrclowest.ewm(span=math.isqrt(length), adjust=False).mean()
 
 
-def hloot(df, hlooSource, length, percent, hllength, hlootMav, useReverseOrderHLOOT):
+def hloot(df, trainedSource, hlooSource, length, percent, hllength, hlootMav, useReverseOrderHLOOT):
     # try:
     # global hlootSrc
     # global hlootSrclowest
     long_signal = []
     short_signal = []
-    reversedHOOTentry = []
     global longStop
     global shortStop
     global dir
@@ -183,6 +182,27 @@ def hloot(df, hlooSource, length, percent, hllength, hlootMav, useReverseOrderHL
     global hoot
     global loot
 
+
+    global vud1
+    global vdd1
+    global vud1l
+    global vdd1l
+
+    if trainedSource["hloot"]["trained"] == True:
+        long_signal = trainedSource["hloot"]["long_signal"]
+        short_signal = trainedSource["hloot"]["short_signal"]
+        longStop = trainedSource["hloot"]["longStop"]
+        shortStop = trainedSource["hloot"]["shortStop"]
+        dir = trainedSource["hloot"]["dir"]
+        longStopl = trainedSource["hloot"]["longStopl"]
+        shortStopl = trainedSource["hloot"]["shortStopl"]
+        dirl = trainedSource["hloot"]["dirl"]
+        hoot = trainedSource["hloot"]["hoot"]
+        loot = trainedSource["hloot"]["loot"]
+        vud1 = trainedSource["hloot"]["vud1"]
+        vdd1 = trainedSource["hloot"]["vdd1"]
+        vud1l = trainedSource["hloot"]["vud1l"]
+        vdd1l = trainedSource["hloot"]["vdd1l"]
 
     try:
         if not df.empty and length:
@@ -256,6 +276,22 @@ def hloot(df, hlooSource, length, percent, hllength, hlootMav, useReverseOrderHL
     except Exception as e:
         h.logger.warning(f'DF {e}')
 
-    
+    if trainedSource["hloot"]["trained"] == False:
+        trainedSource["hloot"]["trained"] = True
+        trainedSource["hloot"]["long_signal"] = long_signal
+        trainedSource["hloot"]["short_signal"] = short_signal
+        trainedSource["hloot"]["longStop"] = longStop
+        trainedSource["hloot"]["shortStop"] = shortStop
+        trainedSource["hloot"]["dir"] = dir
+        trainedSource["hloot"]["longStopl"] = longStopl
+        trainedSource["hloot"]["shortStopl"] = shortStopl
+        trainedSource["hloot"]["dirl"] = dirl
+        trainedSource["hloot"]["hoot"] = hoot
+        trainedSource["hloot"]["loot"] = loot
+        trainedSource["hloot"]["vud1"] = vud1
+        trainedSource["hloot"]["vdd1"] = vdd1
+        trainedSource["hloot"]["vud1l"] = vud1l
+        trainedSource["hloot"]["vdd1l"] = vdd1l
+
     # MAvg = getMA(df, hlootSrc, hlootSrcPrevious, hlootSrclowest, hlootSrclowestPrevious, length, hllength, hlootMav)
-    return long_signal, short_signal, hoot, loot
+    return long_signal, short_signal, hoot, loot, trainedSource

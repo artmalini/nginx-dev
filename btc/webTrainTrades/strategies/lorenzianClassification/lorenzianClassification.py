@@ -12,11 +12,11 @@ import plotly.graph_objects as go
 import pandas as pd
 import helpers as h
 
-def lC(df):
+def lC(df, trainedSource):
     # Inputs
     inputs = {
         "dateRange": False,
-        "source": df['open'],
+        "source": "open",
         "neighborsCount": 8,
         "maxBarsBack": 2000,
         "featureCount": 5,
@@ -120,13 +120,17 @@ def lC(df):
     # ==== Relative Trend Index (RTI) by Zeiierman ====
 
     useReverseOrder = False
+    trainedSourceOutput = trainedSource
 
     if inputs["useLorenzian"]:
-        lorenzian_long_entry, lorenzian_short_entry = lorenzian(df, inputs["source"], inputs["neighborsCount"], inputs["maxBarsBack"], inputs["featureSeries"], inputs["featureCount"])
+        lorenzian_long_entry, lorenzian_short_entry, trainedSourceLC = lorenzian(df, trainedSource, inputs["source"], inputs["neighborsCount"], inputs["maxBarsBack"], inputs["featureSeries"], inputs["featureCount"])
+        trainedSourceOutput.update(trainedSourceLC)
     if inputs["useVSLRT"]:
-        vslrt_long_entry, vslrt_short_entry = vslrt(df, inputs["source"], inputs["vslrtLen1"], inputs["vslrtLen2"])
+        vslrt_long_entry, vslrt_short_entry, trainedSourceVslrt = vslrt(df, trainedSource, inputs["source"], inputs["vslrtLen1"], inputs["vslrtLen2"])
+        trainedSourceOutput.update(trainedSourceVslrt)
     if inputs["useHLOOT"]:
-        hloot_long_entry, hloot_short_entry, hoot, loot = hloot(df, inputs["hlooSource"], inputs["hlootLength"], inputs["hlootPercent"], inputs["hlootHllength"], inputs["hlootMav"], inputs["useReverseOrderHLOOT"])
+        hloot_long_entry, hloot_short_entry, hoot, loot, trainedSourceHloot = hloot(df, trainedSource, inputs["hlooSource"], inputs["hlootLength"], inputs["hlootPercent"], inputs["hlootHllength"], inputs["hlootMav"], inputs["useReverseOrderHLOOT"])
+        trainedSourceOutput.update(trainedSourceHloot)
     if inputs["useEma"]:
         ema_long_entry, ema_short_entry, emaout = ema(df, inputs["emaSource"], inputs["emalen"])
     if inputs["useSma"]:
@@ -230,6 +234,7 @@ def lC(df):
 
         # if useHLOOT:
         return {
+            "trained_source": trainedSourceOutput,
             "long_entry": df['long_entry'], 
             "short_entry": df['short_entry'],
             "high_HLOOT": hoot,

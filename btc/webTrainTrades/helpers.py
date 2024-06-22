@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import logging
 import os
 
-ENABLE_TESTING = True
+ENABLE_TESTING = False
 ENABLE_LOGGING = True
 
 #setup the logger

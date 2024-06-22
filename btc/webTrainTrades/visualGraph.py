@@ -8,10 +8,83 @@ from strategies.lorenzianClassification.lorenzianClassification import lC
 from strategies.dms.directionalMovementIndexStrategy import directionalMovement
 from trackBenefits import trackBenefits
 import helpers as h
+import json
 
 class visualGraph :
-    def __init__(self, source):
+    def __init__(self, source, trainedSource):
         self.klines = source
+        self.trainedSource = trainedSource
+        self.setTrainedSouce(trainedSource)
+
+        self.trainedSource = {
+            "lorenzian": {
+                "trained": False,
+                "long_signal": None,
+                "short_signal": None,
+                "high": None,
+                "low": None,
+                "close": None,
+                "pineRma": None,
+                "pineRma1": None,
+                "adxRma": None,
+                "adxDX": None,
+                "closeU": None,
+                "closeD": None,
+                "closeU1": None,
+                "closeD1": None,  
+                "closeRsi": None,
+                "closeRsi1": None,
+                "nwtCi": None,
+                "hlc3Ci": None,
+                "resultCCI": None,
+                "historicMin": None,
+                "historicMax": None,
+                "historicMinCCI": None,
+                "historicMaxCCI": None,
+                "trSmooth": None,
+                "smoothDirectionalMovementPlus": None,
+                "smoothnegMovement": None,
+                "y_train_series": None,
+                "y_train_array": None,
+                "distances": None,
+                "predictions": None,
+                "prediction": None
+            },
+            "vslrt": {
+                "trained": False,
+                "long_signal": None,
+                "short_signal": None,
+                "slope_price": None,
+                "slope_price_lt": None,
+                "slope_volume_up": None,
+                "slope_volume_down": None,
+                "slope_volume_up_lt": None,
+                "slope_volume_down_lt": None
+            },
+            "hloot": {
+                "trained": False,
+                "long_signal": None,
+                "short_signal": None,
+                "longStop": None,
+                "shortStop": None,
+                "dir": None,
+                "longStopl": None,
+                "shortStopl": None,
+                "dirl": None,
+                "hoot": None,
+                "loot": None,
+                "vud1": None,
+                "vdd1": None,
+                "vud1l": None,
+                "vdd1l": None
+            }
+        }
+        self.jsonTrainedSource = None
+
+    def setTrainedSouce(self, existedTrasinedSource):
+        # TO DO it should switch to mainTrainer
+        return
+        self.trainedSource = existedTrasinedSource
 
     def buildChart(self):
         # Convert 'close_datetime' column to datetime type
@@ -40,7 +113,11 @@ class visualGraph :
                     df['close_datetime'] = pd.to_datetime(df['close_datetime'])
                     df.set_index('close_datetime', inplace=True)
                     # Calculate long and short entry points
-                    lorenzian = lC(df)
+                    lorenzian = lC(df, self.trainedSource)
+                    self.trainedSource.update(lorenzian["trained_source"])
+
+                    self.jsonTrainedSource = json.dumps(self.trainedSource, default=str)
+
                     # h.logger.info(f"Long entry {long_entry}")
                     # return
                     # h.logger.info(f"DF {df}")
@@ -215,4 +292,4 @@ class visualGraph :
 
     def start(self):
         self.buildChart()
-        return
+        return self.jsonTrainedSource

@@ -3,6 +3,13 @@ import numpy as np
 from indicators.libmath import linreg
 import helpers as h
 
+slope_price = None
+slope_price_lt = None
+slope_volume_up = None
+slope_volume_down = None
+slope_volume_up_lt = None
+slope_volume_down_lt = None
+
 # Calculate Buy/Sell Volume
 def _rate(df, cond):
     try:
@@ -29,7 +36,25 @@ def _get_trend(df, len):
     except Exception as e:
         h.logger.warning(f"_get_trend {e}")
 
-def vslrt(df, vslrtSrc, vslrtLen1, vslrtLen2):
+def vslrt(df, trainedSource, dfSource, vslrtLen1, vslrtLen2):
+    global slope_price
+    global slope_price_lt
+    global slope_volume_up
+    global slope_volume_down
+    global slope_volume_up_lt
+    global slope_volume_down_lt
+
+    long_signal = None
+    short_signal = None
+    vslrtSrc = df[dfSource]
+
+    if trainedSource["vslrt"]["trained"] == True:
+        slope_price = trainedSource["vslrt"]["slope_price"]
+        slope_price_lt = trainedSource["vslrt"]["slope_price_lt"]
+        slope_volume_up = trainedSource["vslrt"]["slope_volume_up"]
+        slope_volume_down = trainedSource["vslrt"]["slope_volume_down"]
+        slope_volume_up_lt = trainedSource["vslrt"]["slope_volume_up_lt"]
+        slope_volume_down_lt = trainedSource["vslrt"]["slope_volume_down_lt"]
     try:
         # Get short/long-term regression slope
         slope_price = linreg(vslrtSrc, vslrtLen1, 0) - linreg(vslrtSrc, vslrtLen1, 1)
@@ -44,6 +69,17 @@ def vslrt(df, vslrtSrc, vslrtLen1, vslrtLen2):
         long_signal = (slope_price > 0) & (slope_volume_up > 0) & (slope_volume_up > slope_volume_down) & (slope_price_lt > 0) & (slope_volume_up_lt > 0) & (slope_volume_up_lt > slope_volume_down_lt)
         short_signal = (slope_price < 0) & (slope_volume_down > 0) & (slope_volume_up < slope_volume_down) & (slope_price_lt < 0) & (slope_volume_down_lt > 0) & (slope_volume_up_lt < slope_volume_down_lt)
         
-        return long_signal, short_signal
+        if trainedSource["vslrt"]["trained"] == False:
+            trainedSource["vslrt"]["trained"] = True
+            trainedSource["vslrt"]["long_signal"] = long_signal
+            trainedSource["vslrt"]["short_signal"] = short_signal
+            trainedSource["vslrt"]["slope_price"] = slope_price
+            trainedSource["vslrt"]["slope_price_lt"] = slope_price_lt
+            trainedSource["vslrt"]["slope_volume_up"] = slope_volume_up
+            trainedSource["vslrt"]["slope_volume_down"] = slope_volume_down
+            trainedSource["vslrt"]["slope_volume_up_lt"] = slope_volume_up_lt
+            trainedSource["vslrt"]["slope_volume_down_lt"] = slope_volume_down_lt
+
+        return long_signal, short_signal, trainedSource
     except Exception as e:
         h.logger.warning(f"vslrt {e}")
